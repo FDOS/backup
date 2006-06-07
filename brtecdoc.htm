@@ -1,0 +1,965 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Ralf Quint/The Pacific Coast Byte Factory">
+   <meta name="GENERATOR" content="Mozilla/4.6 [en] (Win98; I) [Netscape]">
+   <meta name="Description" content="This document descibes the technical background for a re-write of the Backup & Restore utilies for the FreeDOS Project.The software is (Will be) compatible with the data formats of the DOS versions 2.x-3.2x and DOS versions 3.3x-5.0x">
+   <meta name="KeyWords" content="Backup, Restore, FreeDOS, MS-DOS, PC-DOS, DR-DOS, Novell DOS">
+   <title>Technical Documentation for FreeDOS Backup &amp; Restore</title>
+</head>
+<body>
+
+<center><b><font face="Arial,Helvetica"><font size=+2>&nbsp;BACKUP &amp;
+RESTORE for the FreeDOS project</font></font></b>
+<br>&nbsp;
+<p><font face="Arial,Helvetica"><font size=-1>&copy; Copyright 1998-2002
+by</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>&nbsp;Ralf Quint</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>&nbsp;&nbsp;&nbsp; The Pacific
+Coast Byte Factory</font></font>
+<p><font face="Arial,Helvetica"><font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;
+Los Angeles, California</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;
+U.S.A</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>&nbsp;&nbsp;&nbsp;&nbsp;
+eMail:<a href="mailto:freedos@gmx.net">freedos@gmx.net</a></font></font>
+<br><font face="Arial,Helvetica"><font size=-1>&nbsp;&nbsp;&nbsp; <a href="http://projects.freedos.net/backup/">http://projects.freedos.net/backup/</a></font></font>
+<br>&nbsp;
+<p><font face="Arial,Helvetica"><font size=-1>Written for the FreeDOS project</font></font>
+<br><font face="Arial,Helvetica"><font size=-1><a href="http://www.freedos.org/">http://www.freedos.org/</a></font></font></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p><a NAME="Intro"></a><b><font face="Arial,Helvetica">BACKUP and RESTORE
+for FreeDOS</font></b>
+<p><font face="Arial,Helvetica"><font size=-1>These two programs resemble
+the programs of the same name of MS-DOS. They are supposed to be compatible
+to those versions, enabling the user to exchange backups between FreeDOS
+and any given DOS version. Unfortunately complete compatibility is no easy
+to achieve. As FreeDOS tries to achieve compatibility to MS-DOS 3.3, the
+compatibility to the BACKUP and RESTORE of this DOS version was the primary
+goal in the development of the program. Extended compatibility will be
+tried to achieve in future versions of the FreeDOS versions of BACKUP and
+RESTORE.</font></font>
+<p><font face="Arial,Helvetica"><font size=-1>One of the biggest problems
+in the development of BACKUP and RESTORE for FreeDOS was the fact that
+no information on the used data format was available. Even different versions
+of DOS were not able to read each others backup files, giving the user
+sometimes big headaches after upgrades or system crashes, as previous backups
+were not readable anymore. At least MS-DOS 6.22 came with a RESTORE program
+(beside the MSBACKUP.EXE) that is able to read at least backup files from
+DOS versions 2.x-5.x.</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>The basic hints about the
+data format of the different MS-DOS version were found in an article of
+the excellent German computer magazine c’t (<a href="http://www.heise.de/ct/">http://www.heise.de/ct/</a>)
+in 1989. The presented information were expanded by own reverse engineering
+and the demo programs, written in Borland Pascal, were improved to one,
+much more sophisticated RESTORE program. All this work is the base for
+the FreeDOS versions of BACKUP and RESTORE, written in C (Borland C++ 3.1/Turbo
+C++ 3.0), as supposed for the FreeDOS development.</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>Some additional information
+and testing tools have been available on Microsoft's web site on this issue
+(<a href="http://support.microsoft.com/download/support/mslfiles/PD0315.EXE">http://support.microsoft.com/download/support/mslfiles/PD0315.EXE</a>).</font></font><font face="Arial,Helvetica"><font size=-1></font></font>
+<p><font face="Arial,Helvetica"><font size=-1><u><font color="#FF0000">Note:</font></u>
+The link is not valid anymore. Microsoft has (re)moved this and other DOS
+related programs and I have not been able to locate a (legal) alternate
+location for these.</font></font>
+<p><font face="Arial,Helvetica"><font size=-1>Beside the information how
+to use BACKUP and RESTORE for FreeDOS, this document is intended to give
+the basic information about the used data structures, files formats and
+further issues.</font></font>
+<p><a NAME="Data Formats"></a><b><font face="Arial,Helvetica"><font size=+1>BACKUP
+DATA FORMATS</font></font></b>
+<p><a NAME="Data Format DOS 2.x-3.2x"></a><b><font face="Arial,Helvetica">Data
+format for the DOS versions 2.0 to 3.2x</font></b>
+<p><font face="Arial,Helvetica"><font size=-1>The Backup for these DOS
+versions creates one control file (BACKUPID.@@@) for each backup disk and
+a single backup file for each backed up file.</font></font>
+<p><font face="Arial,Helvetica"><font size=-1>The format of the BACKUPID.@@@
+control file is as follows:</font></font>
+<br>&nbsp;
+<table BORDER WIDTH="100%" BGCOLOR="#CCFFFF" >
+<caption><a NAME="BACKUPID.@@@"></a><b><font face="Arial,Helvetica"><font size=-1>BACKUPID.@@@,
+128 bytes</font></font></b></caption>
+
+<tr BGCOLOR="#33CCFF">
+<td><b><font face="Arial,Helvetica"><font size=-1>Offset</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Size&nbsp;</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Contents</font></font></b></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0000</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Flag for multi disk backups,
+0xFF=only/last disk of set, 0x00=not the last disk of multi disk set</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0001</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>2 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 word, sequence number
+of the backup disk</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0003</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>2 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 word, Year of the backup
+creation</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0005</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Day of the backup creation</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0006</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Month of backup creation</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0007</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>121 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>All bytes zero, no know
+usage so far</font></font></td>
+</tr>
+</table>
+
+<p><font face="Arial,Helvetica"><font size=-1>Each of these backup files
+consists of the original file contents preceded by a 128 byte header and
+the original filename.</font></font>
+<p><font face="Arial,Helvetica"><font size=-1>The format of the file header
+is as follows:</font></font>
+<br>&nbsp;
+<table BORDER WIDTH="100%" BGCOLOR="#CCFFFF" >
+<caption><a NAME="Backup Header 3.2x"></a><b><font face="Arial,Helvetica"><font size=-1>Backup
+file header (128 bytes)</font></font></b></caption>
+
+<tr BGCOLOR="#33CCFF">
+<td><b><font face="Arial,Helvetica"><font size=-1>Offset</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Size</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Contents</font></font></b></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0000</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>flag for split files, 0xFF=complete
+file or last part of split file, 0x00=split file</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0001</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>2 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 word, sequence number
+of a spit file, 0x0001 for complete file on disk</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0003</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>2 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 word, ???</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0005</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>78 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Full pathname of the backed
+up file, without drive letter, zero terminated <b>*1</b></font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0053</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Length of the path/filename</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0054</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>44 bytes&nbsp;</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>unknown (unused ???)&nbsp;</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0080</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>n bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Original file contents</font></font></td>
+</tr>
+</table>
+
+<table WIDTH="100%" >
+<tr ALIGN=LEFT VALIGN=TOP>
+<td><b><u><font face="Arial,Helvetica"><font size=-1>*1 Note:</font></font></u></b></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>There is supposed to be
+a difference how MS-DOS 3.2 and IBM-DOS 3.2 handle the pathname entries.
+MS-DOS BACKUP writes the path name with a forward slash (/) and RESTORE
+accepts both forward and backward slash (\), while IBM-DOS accepts only
+the backward slash (\). The BACKUP program of FreeDOS writes only backward
+slashes and accepts both types in the RESTORE program. This avoids any
+further compatibility problems. On at least one system that i acquired
+with MS-DOS 3.2 loaded, the backup files were written with the backward
+slash (\).</font></font></td>
+</tr>
+</table>
+
+<p><a NAME="Data Format DOS 3.3x-5.0x"></a><b><font face="Arial,Helvetica">Data
+format for the DOS versions 3.30 to 5.x</font></b>
+<p><font face="Arial,Helvetica"><font size=-1>Each backup disk consist
+of two files:</font></font>
+<br>&nbsp;
+<table WIDTH="100%" >
+<tr>
+<td VALIGN=TOP>-</td>
+
+<td><font face="Arial,Helvetica"><font size=-1>A control file holding name,
+attributes, date/time stamp and size with the filename CONTROL.??? with
+.??? in the range 000 to 255 (or 999 ? Sorry folks, but I had no interest
+in testing this ;-)&nbsp; )</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>-</td>
+
+<td><font face="Arial,Helvetica"><font size=-1>A backup file (BACKUP.???)
+associated to the CONTROL.??? File, which is just one file copied after
+the other</font></font></td>
+</tr>
+</table>
+
+<p><font face="Arial,Helvetica"><font size=-1>The format of the control
+file is as follows:</font></font>
+<br>&nbsp;
+<table BORDER WIDTH="100%" BGCOLOR="#CCCCCC" >
+<caption><a NAME="Control File Header"></a><b><font face="Arial,Helvetica"><font size=-1>Control
+file header, 139 bytes</font></font></b></caption>
+
+<tr BGCOLOR="#999999">
+<td><b><font face="Arial,Helvetica"><font size=-1>Offset</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Size</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Contents</font></font></b></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0000</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>0x8B, length of the header
+record, including this byte</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0001</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>8 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>The signature “BACKUP&nbsp;
+“</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0009</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Number of the backup disk
+(sequence), same as the extension (or 2 bytes for extension range 000-999
+???)</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x000A</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>128 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Unknown, all zero bytes</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x008A</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>0xFF, indicator if last
+disk in backup sequence</font></font></td>
+</tr>
+</table>
+
+<p><font face="Arial,Helvetica"><font size=-1>followed by&nbsp; a number
+of entries of one of the following types</font></font>
+<br>&nbsp;
+<table BORDER WIDTH="100%" BGCOLOR="#CCCCCC" >
+<caption><a NAME="Directory Entry"></a><b><font face="Arial,Helvetica"><font size=-1>Directory
+entry, 70 bytes</font></font></b></caption>
+
+<tr BGCOLOR="#999999">
+<td><b><font face="Arial,Helvetica"><font size=-1>Offset</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Size</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Contents</font></font></b></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0000</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>0x46, length of the entry
+record, including this byte</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0001</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>63 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Directory path name (zero
+padded ?), root is 0x00</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0040</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>2 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 word, number entries in
+this directory</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0042</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>4 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 long (?), 0xFFFFFFFF</font></font></td>
+</tr>
+</table>
+
+<p><font face="Arial,Helvetica"><font size=-1>It appears that at least
+one directory entry has to be written to the CONTROL file in order to define
+the source path of the backed up files.</font></font>
+<br>&nbsp;
+<table BORDER WIDTH="100%" BGCOLOR="#CCCCCC" >
+<caption><a NAME="File Entry"></a><b><font face="Arial,Helvetica"><font size=-1>File
+entry, 34 bytes</font></font></b></caption>
+
+<tr BGCOLOR="#999999">
+<td><b><font face="Arial,Helvetica"><font size=-1>Offset</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Size</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Contents</font></font></b></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0000</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>0x22, length of the entry
+record, including this byte</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0001</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>12 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>File name</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x000B</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Flag for complete (03h)
+or split (02h) file</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x000C</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>4 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 long, original file size</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0012</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>2 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 word, sequence/part of
+the backup file (1= first/complete, 2,3..=part of the file</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0014</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>4 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 long, offset into BACKUP.???
+File</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0018</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>4 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 long, saved length in
+the BACKUP.??? File</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x001A</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>File attributes</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x001B</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>Unknown</font></font></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x001C</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>4 bytes</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 long,&nbsp; file time/date
+stamp (DOS format, packed structure)</font></font></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER WIDTH="100%" BGCOLOR="#CCCCCC" >
+<caption><a NAME="End of Backup Entry"></a><b><font face="Arial,Helvetica"><font size=-1>End
+of backup, 1 byte</font></font></b></caption>
+
+<tr BGCOLOR="#999999">
+<td><b><font face="Arial,Helvetica"><font size=-1>Offset</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Size</font></font></b></td>
+
+<td><b><font face="Arial,Helvetica"><font size=-1>Contents</font></font></b></td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>0x0000</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>1 byte</font></font></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>0x00, length of the entry
+record, excluding this byte</font></font></td>
+</tr>
+</table>
+
+<p><a NAME="Data Format DOS 6.x-7.x"></a><b><font face="Arial,Helvetica">Data
+format for the DOS versions 6.x</font></b>
+<p><font face="Arial,Helvetica"><font size=-1>With the newer, more enhanced
+versions of DOS emerging, unfortunately compatibility between the different
+DOS versions became an illusion. Not only that MS-DOS and PC-DOS went different
+ways after the split-up of the development between Microsoft and IBM, with
+Digital Research/Novell there was a third player with an even more different
+DOS version.</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>The Backup programs for
+these DOS versions are actually licensed versions of the Norton (Symantec)
+or Central Point (Symantec) backup programs. They use proprietary compression
+formats (QIC-113?) which make use of the compression ApI present in DoubleSpace/DriveSpace,
+and those are for copyright reasons not usable. Even though the program
+became more sophisticated in their abilities, compatibility to earlier
+DOS versions seems never to be an issue for their implementation.</font></font>
+<p><a NAME="FreeDOS Backup Y2K Statement"></a><b><font face="Arial,Helvetica">The
+FreeDOS BACKUP &amp; RESTORE and the Y2K issue</font></b>
+<p><font face="Arial,Helvetica"><font size=-1>Both programs use the DOS
+provided data structures to represent the files date and time stamp. These
+time stamps can be considered Y2K safe. Any date output of these two programs
+is using the 4-digit format and accepts any date in this format. 2 digit
+years are considered to be an offset to 1980, so being interpreted as being
+1980 to 2079.</font></font>
+<p><a NAME="Coding Prerequisites"></a><b><font face="Arial,Helvetica">Coding/Compiling
+Requirements</font></b>
+<br><font face="Arial,Helvetica"><font size=-1>The programs BACKUP and
+RESTORE for FreeDOS have been developed using Borland C++ 3.1 and Turbo
+C++ 3.0. They won't compile with the free available Turbo C 2.01 (yet),
+mainly because of a heavy use of the C++ style '//' comments. The sources
+themselves are otherwise written in straight ANSI C (with the necessary
+DOS extensions), there is no C++ code used. All source files use the .C
+extension, all header files use .h extension, with the exception of the
+include files for the "build" number, which have the extension .bld. The
+source distribution for these programs provide the necessary .PRJ files
+(in BC/TC 3x format). The important settings are summarized in the following
+table:</font></font>
+<br>&nbsp;
+<table BORDER WIDTH="90%" BGCOLOR="#FFFFFF" >
+<tr BGCOLOR="#66FF99">
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>Setting</font></font></b></center>
+</td>
+
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>BACKUP</font></font></b></center>
+</td>
+
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>RESTORE</font></font></b></center>
+</td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>Tabs Size</font></font></td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>4</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>4</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>Memory Model</font></font></td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>Small</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>Small</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>Code Generation: CPU</font></font></td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>8088/8086</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>8088/8086</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>Code Generation: Floating
+Point</font></font></td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>None</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>None</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td><font face="Arial,Helvetica"><font size=-1>Display Warnings</font></font></td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>ALL<b>*</b></font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>ALL<b>*</b></font></font></center>
+</td>
+</tr>
+</table>
+<font face="Arial,Helvetica"><font size=-1><b><u>*Note:</u></b> I like
+to enable all warnings, as any warning is a potential source for "bugs".
+If time permits and I'm in a good mood (so I'm not getting too frustrated...),
+i will run PC-LINT (s. <a href="http://www.gimpelsoft.com">www.gimpel.com</a>)
+to eliminate any further existing inconsistencies.</font></font>
+<p><a NAME="Coding Backup"></a><b><font face="Arial,Helvetica"><font size=-1>BACKUP</font></font></b>
+<p><a NAME="Coding: Restore"></a><b><font face="Arial,Helvetica"><font size=-1>RESTORE</font></font></b>
+<p><a NAME="Known problems and issues"></a><b><font face="Arial,Helvetica">Known
+problems and issues</font></b>
+<ul>
+<li>
+<font face="Arial,Helvetica"><font size=-1>Both BACKUP and RESTORE are
+using the format of the backup program of MS-DOS version 3.3x to 5.x only.
+In a future release at least RESTORE will be able to make use of the pre
+DOS 3.3x backup data format.</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>Both programs have a very rudimentary
+error handling, which will be improved in future releases.</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>There is no localization attempt
+made yet. All date inputs have to be made in YYYY-MM-DD format</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>The current version of the BACKUP
+program is not able to format the used backup media. Any backup is written
+to pre-formatted disks in whatever format is supported by the underlying
+DOS.</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>Any previous file on the backup
+disk will be overwritten</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>There has been no attempt yet
+to translate the input/output of the program to another language. As soon
+as the basic functionality of the programs is achieved, internationalization
+is the next priority with German as the first available language.</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>Formatting a new disk is not
+implemented yet, as the FreeDOS format program is not able to support all
+necessary floppy disk formats and I didn't have time yet to implement my
+own routines.</font></font></li>
+</ul>
+
+<p><br><a NAME="Program History"></a><b><font face="Arial,Helvetica">Program
+history</font></b>
+<table WIDTH="100%" >
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v0.01.01</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>1998/11/07</font></font></center>
+</td>
+
+<td><font face="Arial,Helvetica"><font size=-1>start of the program(s)
+for the FreeDOS project</font></font></td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v0.10.00</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>2002/07/04</font></font></center>
+</td>
+
+<td><font face="Arial,Helvetica"><font size=-1>first public release for
+the FreeDOS project</font></font></td>
+</tr>
+</table>
+
+<p><font face="Arial,Helvetica"><font size=-1>These programs are basically
+the translation of an existing program from Turbo/Borland Pascal to the
+C language to meet the requirements of the FreeDOS project.</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>The information about the
+data format is acquired from an article of the German computer magazine
+c’t, published in 1989. This information is expanded by own re-engineering
+of the data written and read by the original MS-DOS BACKUP and RESTORE
+programs.</font></font>
+<p><font face="Arial,Helvetica"><font size=-1>BACKUP and RESTORE for FreeDOS
+are written in Borland C++ 3.1 and Turbo C++ 3.0 (&copy; by Borland Inc.,
+now Inprise Inc).</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>MS-DOS™ of Microsoft Corporation</font></font>
+<br><font face="Arial,Helvetica"><font size=-1>DR-DOS, Novell-DOS ™ of
+Caldera/Lineo.</font></font>
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER COLS=3 WIDTH="100%" BGCOLOR="#FFFFCC" >
+<caption>
+<center><font face="Arial,Helvetica"><font size=-1>Both programs were tested
+with the latest version of FreeDOS and the following DOS versions</font></font></center>
+</caption>
+
+<tr BGCOLOR="#FFFF00">
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>MS-DOS</font></font></b></center>
+</td>
+
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>IBM/PC-DOS</font></font></b></center>
+</td>
+
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>DR/Novell/OpenDOS</font></font></b></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v2.10</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v3.20</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v3.10</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v3.21</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v3.30</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v3.30</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v4.01</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v5.0</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v5.00.1</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table WIDTH="100%" >
+<tr>
+<td VALIGN=TOP><b><u><font face="Arial,Helvetica"><font size=-1>Note:</font></font></u></b></td>
+
+<td><font face="Arial,Helvetica"><font size=-1>BACKUP and RESTORE for FreeDOS
+were tested on the following DOS versions for their functionality according
+to the specification of this document. The FreeDOS programs are not compatible
+with the BACKUP/RESTORE programs of these DOS versions!</font></font></td>
+</tr>
+</table>
+
+<table BORDER WIDTH="100%" BGCOLOR="#FFFFCC" >
+<tr BGCOLOR="#FFFF00">
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>MS-DOS/Windows</font></font></b></center>
+</td>
+
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>&nbsp;IBM/PC-DOS</font></font></b></center>
+</td>
+
+<td>
+<center><b><font face="Arial,Helvetica"><font size=-1>DR-DOS/Novell/OpenDOS</font></font></b></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.0</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.0</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>DR-DOS 6.0</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.20</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.1</font></font></center>
+</td>
+
+<td><font size=-1>&nbsp;</font></td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.21</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.22</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v6.3</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v7.0 (Windows 95)</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v7.0</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>Novell DOS 7.0</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v7.1 (Windows 95SR2,
+Windows 98)</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>v7.1</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+
+<tr>
+<td><font size=-1>&nbsp;</font></td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>PC-DOS 2000</font></font></center>
+</td>
+
+<td>
+<center><font face="Arial,Helvetica"><font size=-1>&nbsp;</font></font></center>
+</td>
+</tr>
+</table>
+
+<p><a NAME="Roadmap"></a><b><font face="Arial,Helvetica">Road map for future
+program versions</font></b>
+<ul>
+<li>
+<font face="Arial,Helvetica"><font size=-1>Introducing compressed backup
+format (I'm not sure yet if ZLIB compatible or with an own implementation
+of a compressing algorithm)</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>Compatibility with floppy based
+backups for DOS 6.x – 7.1 (QIC-113)</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>Adding support for tape devices</font></font></li>
+
+<li>
+<font face="Arial,Helvetica"><font size=-1>Localization for date format
+and different languages</font></font></li>
+</ul>
+
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

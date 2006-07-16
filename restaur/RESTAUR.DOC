@@ -1,0 +1,94 @@
+
+                           R E S T A U R  1.0
+                           ==================
+
+               Free Software by TapirSoft Gisbert W.Selke
+
+
+
+RESTAUR is a more versatile replacement for DOS RESTORE. It handles old
+backups made by DOS versions 3.2 or earlier as well as those made by
+current DOS releases (up to 4.01 as of this writing). It allows
+restoration of files to the original directories, as offered by DOS
+BACKUP; in addition, files may be restored to different locations or
+under different names.
+
+RESTAUR is also more forgiving with respect to the disk sequence: a
+restauration may begin in the middle of a series of disks (but not in
+the middle of a single file!).
+
+Start RESTAUR stating the source path and the destination path, in
+this order; e.g.,
+
+                RESTAUR  a:  c:
+
+to restore from backup disks in drive A: to hard disk C:, preserving the
+original locations of files within subdirectories.
+
+Alternatively, the destination may consist not only of a drive, but of a
+complete path; in this case, the original locations of files are
+discarded and replaced by the specified one; e.g.,
+
+                RESTAUR  a:  c:\test
+
+to restore everything in directory TEST of drive C:.
+
+All the backed-up files are offered one by one for
+
+             C  - copying (i.e., restoration),
+             R  - renaming,
+             D  - change of destination on a single file basis,
+             A  - proceeding without asking more questions,
+             S  - skipping a single file,
+             Q  - quitting the restoration.
+
+If a file is found to already exist in the destination directory, the
+user is prompted again for
+
+             O  - overwriting,
+             R  - renaming,
+             D  - change of destination,
+             S  - skipping this file.
+
+There are two optional command line arguments:
+
+/A copies all files without asking questions out of class 1 above, just
+as if A had been answered on the very first file.
+
+/O overwrites all existing files without ado; in other words, class 2
+questions are never asked.
+
+Both /A and /O together provide fully automatic service.
+
+Brief on-line help is available by giving a command line argument of ?.
+
+
+
+This is free software; it may be used and copied freely but must not be
+sold for profit under any circumstances.
+
+
+Acknowledgments:
+
+I have used information on the various DOS backup formats published in
+the February 89 issue of c't. I have used none of their code, however.
+
+The Wissenschaftliches Institut der Ortskrankenkassen, Bonn, has kindly
+supplied me with test data.
+
+The code was developped and compiled using Borland's TurboPascal 6.0
+compiler.
+
+
+Suggestions, bug reports etc. may be addressed to
+
+TapirSoft
+Gisbert W.Selke
+Ermekeilstrasse 28
+D-5300 Bonn 1
+Germany
+<S00100@DBNRHRZ1.BITNET>
+
+
+Enjoy!
+
